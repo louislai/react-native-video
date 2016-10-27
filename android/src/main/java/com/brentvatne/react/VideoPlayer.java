@@ -12,14 +12,16 @@ import android.widget.MediaController;
 import com.brentvatne.react.CcMediaController;
 import android.os.Handler;
 import android.content.Intent;
+import android.widget.ProgressBar;
 
 public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener, MediaController.MediaPlayerControl {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnInfoListener, MediaController.MediaPlayerControl {
 
     private VideoView mVV;
     private CcMediaController mediaController;
     private Handler videoControlHandler = new Handler();
     private int mStartPos;
+    private ProgressBar mProgressBar;
 
     @Override
     public void onCreate(Bundle b) {
@@ -30,15 +32,13 @@ public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListe
 
         setContentView(R.layout.videoplayer);
 
-//        int fileRes=0;
-//        Bundle e = getIntent().getExtras();
-//        if (e!=null) {
-//            fileRes = e.getInt("fileRes");
-//        }
+        mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         mVV = (VideoView)findViewById(R.id.myvideoview);
 //        mVV.setOnCompletionListener(this);
         mVV.setOnPreparedListener(this);
+        mVV.setOnInfoListener(this);
 //        mVV.setOnTouchListener(this);
 //
 //        if (!playFileRes(fileRes)) return;
@@ -71,6 +71,7 @@ public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListe
     @Override
     public void onPrepared(MediaPlayer mp) {
         this.seekTo(mStartPos);
+//        mProgressBar.setVisibility(View.GONE);
         initializeMediaControllerIfNeeded();
         mediaController.setMediaPlayer(mVV);
         mediaController.setAnchorView(mVV);
@@ -82,6 +83,17 @@ public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListe
                 mediaController.show();
             }
         });
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+//            mProgressBar.setVisibility(View.GONE);
+        }
+        return false;
     }
 
     @Override
