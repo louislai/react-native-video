@@ -17,7 +17,8 @@ import com.yqritc.scalablevideoview.ScalableVideoView;
 import android.util.Log;
 
 public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnPreparedListener, MediaPlayer
-        .OnErrorListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener {
+        .OnErrorListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnInfoListener {
 
     public enum Events {
         EVENT_LOAD_START("onVideoLoadStart"),
@@ -26,6 +27,8 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
         EVENT_PROGRESS("onVideoProgress"),
         EVENT_SEEK("onVideoSeek"),
         EVENT_FULLSCREEN_WILL_DISMISS("onVideoFullscreenPlayerWillDismiss"),
+        EVENT_BUFFERING("onBuffering"),
+        EVENT_BUFFERING_END("onBufferingEnd"),
         EVENT_END("onVideoEnd");
 
         private final String mName;
@@ -106,6 +109,7 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mMediaPlayer.setOnVideoSizeChangedListener(this);
+            mMediaPlayer.setOnInfoListener(this);
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(this);
@@ -310,6 +314,19 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
             super.seekTo(msec);
         }
     }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        WritableMap event = Arguments.createMap();
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            mEventEmitter.receiveEvent(getId(), Events.EVENT_BUFFERING.toString(), event);
+        }
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            mEventEmitter.receiveEvent(getId(), Events.EVENT_BUFFERING_END.toString(), event);
+        }
+        return false;
+    }
+
 
     @Override
     public void onCompletion(MediaPlayer mp) {

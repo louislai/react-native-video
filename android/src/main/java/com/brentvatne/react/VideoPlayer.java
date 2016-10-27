@@ -70,8 +70,9 @@ public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        mp.setScreenOnWhilePlaying(true);
         this.seekTo(mStartPos);
-//        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
         initializeMediaControllerIfNeeded();
         mediaController.setMediaPlayer(mVV);
         mediaController.setAnchorView(mVV);
@@ -91,7 +92,7 @@ public class VideoPlayer extends Activity implements MediaPlayer.OnPreparedListe
             mProgressBar.setVisibility(View.VISIBLE);
         }
         if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-//            mProgressBar.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.GONE);
         }
         return false;
     }
