@@ -127,6 +127,7 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
     public void onVideoFullScreenWillDismiss() {
         WritableMap event = Arguments.createMap();
         mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_WILL_DISMISS.toString(), event);
+        mFullScreen = false;
     }
 
     public void setFullScreen(final boolean isFullScreen) {
