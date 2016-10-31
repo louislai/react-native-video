@@ -1,24 +1,28 @@
 package com.brentvatne.react;
 
 import android.media.MediaPlayer;
+import android.view.Surface;
 import android.os.Handler;
 import android.util.Log;
 import android.net.Uri;
 import android.webkit.CookieManager;
 import java.util.Map;
 import java.util.HashMap;
+import java.lang.Thread;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.yqritc.scalablevideoview.ScalableType;
-import com.yqritc.scalablevideoview.ScalableVideoView;
+import com.brentvatne.react.ScalableVideoView;
 
 import android.util.Log;
 
 public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnPreparedListener, MediaPlayer
         .OnErrorListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnInfoListener {
+
+
 
     public enum Events {
         EVENT_LOAD_START("onVideoLoadStart"),
@@ -41,6 +45,16 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
         public String toString() {
             return mName;
         }
+    }
+
+    public static MediaPlayer player;
+    public static Surface surface;
+
+    public static MediaPlayer getMediaPlayer(final boolean forceNew) {
+        if (ReactVideoView.player == null || forceNew) {
+            ReactVideoView.player = new MediaPlayer();
+        }
+        return ReactVideoView.player;
     }
 
     public static final String EVENT_PROP_FAST_FORWARD = "canPlayFastForward";
@@ -87,33 +101,34 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
         mThemedReactContext = themedReactContext;
         mEventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
+        ReactVideoView.surface = mSurface;
         initializeMediaPlayerIfNeeded();
+
         setSurfaceTextureListener(this);
 
-        mProgressUpdateRunnable = new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
+                mProgressUpdateRunnable = new Runnable() {
+                    @Override
+                    public void run() {
 
-                if (mMediaPlayerValid && !mFullScreen) {
-                    onProgress(mMediaPlayer.getCurrentPosition() / 1000.0);
-                }
-                mProgressUpdateHandler.postDelayed(mProgressUpdateRunnable, 250);
+                        if (mMediaPlayerValid) {
+                            onProgress(mMediaPlayer.getCurrentPosition() / 1000.0);
+                        }
+                        mProgressUpdateHandler.postDelayed(mProgressUpdateRunnable, 250);
+                    }
+                };
+                mProgressUpdateHandler.post(mProgressUpdateRunnable);
             }
-        };
-        mProgressUpdateHandler.post(mProgressUpdateRunnable);
+        }).start();
     }
 
     private void initializeMediaPlayerIfNeeded() {
         if (mMediaPlayer == null) {
             mMediaPlayerValid = false;
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setScreenOnWhilePlaying(true);
-            mMediaPlayer.setOnVideoSizeChangedListener(this);
-            mMediaPlayer.setOnInfoListener(this);
-            mMediaPlayer.setOnErrorListener(this);
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.setOnBufferingUpdateListener(this);
-            mMediaPlayer.setOnCompletionListener(this);
+            mMediaPlayer = ReactVideoView.getMediaPlayer(true);
+            setListeners();
         }
     }
 
@@ -128,6 +143,7 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
         WritableMap event = Arguments.createMap();
         mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_WILL_DISMISS.toString(), event);
         mFullScreen = false;
+        setListeners();
     }
 
     public void setFullScreen(final boolean isFullScreen) {
@@ -146,6 +162,8 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
 
         initializeMediaPlayerIfNeeded();
         mMediaPlayer.reset();
+
+        Log.d("Media Player", "RESETESTDSGDF");
 
         try {
             if (isNetwork) {
@@ -331,13 +349,15 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        mMediaPlayerValid = false;
+//        mMediaPlayerValid = false;
         mEventEmitter.receiveEvent(getId(), Events.EVENT_END.toString(), null);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         mMediaPlayerValid = false;
+        ReactVideoView.player = null;
+        ReactVideoView.surface = null;
         super.onDetachedFromWindow();
     }
 
@@ -345,5 +365,15 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset);
+    }
+
+    private void setListeners() {
+        mMediaPlayer.setScreenOnWhilePlaying(true);
+        mMediaPlayer.setOnVideoSizeChangedListener(this);
+        mMediaPlayer.setOnInfoListener(this);
+        mMediaPlayer.setOnErrorListener(this);
+        mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setOnBufferingUpdateListener(this);
+        mMediaPlayer.setOnCompletionListener(this);
     }
 }

@@ -7,16 +7,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.MediaController;
 
-public class CcMediaController extends MediaController {
+public class ReactMediaController extends MediaController {
 
-    ImageButton mCCBtn;
+    ImageButton mBtn;
     Context mContext;
 
-    public CcMediaController(Context context) {
-        super(context);
+    public ReactMediaController(Context context, boolean useFastForward) {
+        super(context, useFastForward);
         mContext = context;
-        mCCBtn = new ImageButton(mContext);
-        mCCBtn.setImageResource(R.drawable.minimize);
+        mBtn = new ImageButton(mContext);
+        mBtn.setImageResource(R.drawable.minimize);
     }
 
     @Override
@@ -27,11 +27,11 @@ public class CcMediaController extends MediaController {
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         frameParams.gravity = Gravity.RIGHT|Gravity.TOP;
 
-        addView(mCCBtn, frameParams);
+        addView(mBtn, frameParams);
 
     }
 
     public void setDoneOnClickListenter(OnClickListener ocl) {
-        mCCBtn.setOnClickListener(ocl);
+        mBtn.setOnClickListener(ocl);
     }
 }

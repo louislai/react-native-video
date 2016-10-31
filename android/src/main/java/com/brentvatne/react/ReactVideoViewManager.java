@@ -12,7 +12,7 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.yqritc.scalablevideoview.ScalableType;
-import com.brentvatne.react.VideoPlayer;
+import com.brentvatne.react.FullScreenVideoActivity;
 import android.app.Activity;
 import javax.annotation.Nullable;
 import android.content.Intent;
@@ -42,7 +42,6 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> imp
 
     private ThemedReactContext mThemedReactContext;
     private ReactApplicationContext mReactContext;
-    private ReadableMap mSrc;
     private ReactVideoView mVideoView;
 
     public ReactVideoViewManager(ReactApplicationContext reactContext) {
@@ -85,7 +84,6 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> imp
 
     @ReactProp(name = PROP_SRC)
     public void setSrc(final ReactVideoView videoView, @Nullable ReadableMap src) {
-        mSrc = src;
         videoView.setSrc(
                 src.getString(PROP_SRC_URI),
                 src.getString(PROP_SRC_TYPE),
@@ -134,19 +132,13 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> imp
         if (fullscreen) {
             videoView.setFullScreen(true);
             int currentPosition = mVideoView.getCurrentPosition();
-            Intent intent = new Intent(mThemedReactContext, VideoPlayer.class);
-            intent.putExtra("URI", mSrc.getString(PROP_SRC_URI));
-            intent.putExtra("startPos", currentPosition);
+            Intent intent = new Intent(mThemedReactContext, FullScreenVideoActivity.class);
             mThemedReactContext.startActivityForResult(intent, START_ACTIVITY_REQUEST_CODE, new Bundle());
         }
     }
 
     public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == START_ACTIVITY_REQUEST_CODE) {
-            int currentTime = data.getIntExtra("startPos", 0);
-
-            mVideoView.onProgress(currentTime / 1000.0);
-
             mVideoView.onVideoFullScreenWillDismiss();
         }
     }
@@ -154,10 +146,6 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> imp
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == START_ACTIVITY_REQUEST_CODE) {
-            int currentTime = data.getIntExtra("startPos", 0);
-
-            mVideoView.onProgress(currentTime / 1000.0);
-
             mVideoView.onVideoFullScreenWillDismiss();
         }
     }

@@ -1,4 +1,31 @@
 {
+  "_args": [
+    [
+      "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+      "/Users/louis/AvgenMobileNew"
+    ]
+  ],
+  "_from": "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+  "_id": "react-native-video@0.8.0",
+  "_inCache": true,
+  "_location": "/react-native-video",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": null,
+    "raw": "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+    "rawSpec": "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+    "scope": null,
+    "spec": "ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+    "type": "git"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video#46c4474f3c2a25d10ca21d279e2dfbd5914edd3d",
+  "_shasum": "3a6e9de25638e5c71b31c0ce8212f9e9019f5132",
+  "_shrinkwrap": null,
+  "_spec": "git+ssh://wsc-zoomin@wsc-zoomin.visualstudio.com:22/DefaultCollection/ZoomInCloud/_git/native-video",
+  "_where": "/Users/louis/AvgenMobileNew",
   "dependencies": {
     "keymirror": "0.1.1"
   },
@@ -10,9 +37,14 @@
     "eslint-plugin-react": "3.16.1",
     "jest-cli": "0.2.1"
   },
+  "gitHead": "46c4474f3c2a25d10ca21d279e2dfbd5914edd3d",
+  "installable": true,
   "license": "MIT",
   "main": "Video.js",
   "name": "react-native-video",
+  "optionalDependencies": {},
+  "readme": "## react-native-video\n\nA `<Video>` component for react-native, as seen in\n[react-native-login](https://github.com/brentvatne/react-native-login)!\n\nRequires react-native >= 0.19.0\n\n### Add it to your project\n\nRun `npm install react-native-video --save`\n\n#### iOS\n\nInstall [rnpm](https://github.com/rnpm/rnpm) and run `rnpm link react-native-video`\n\nIf you would like to allow other apps to play music over your video component, add:\n\n**AppDelegate.m**\n```\n#import <AVFoundation/AVFoundation.h>  // import\n\n- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions\n{\n  ...\n  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];  // allow\n  ...\n}\n```\n\n#### Android\n\nFirst, copy your video file to `android/app/src/main/res/raw/`, then\nmake the following additions to the given files:\n\n**android/settings.gradle**\n```\ninclude ':RCTVideo', ':app'\nproject(':RCTVideo').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android')\n```\n\n**android/app/build.gradle**\n```\ndependencies {\n   ...\n   compile project(':RCTVideo')\n}\n```\n\n**MainActivity.java**\n\nOn top, where imports are:\n```java\nimport com.brentvatne.react.ReactVideoPackage;\n```\n\nUnder `.addPackage(new MainReactPackage())`:\n```java\n.addPackage(new ReactVideoPackage())\n```\n\n## Usage\n\n```javascript\n// Within your render function, assuming you have a file called\n// \"background.mp4\" in your project. You can include multiple videos\n// on a single screen if you like.\n<Video source={{uri: \"background\"}} // Can be a URL or a local file.\n       rate={1.0}                   // 0 is paused, 1 is normal.\n       volume={1.0}                 // 0 is muted, 1 is normal.\n       muted={false}                // Mutes the audio entirely.\n       paused={false}               // Pauses playback entirely.\n       resizeMode=\"cover\"           // Fill the whole screen at aspect ratio.\n       repeat={true}                // Repeat forever.\n       onLoadStart={this.loadStart} // Callback when video starts to load\n       onLoad={this.setDuration}    // Callback when video loads\n       onProgress={this.setTime}    // Callback every ~250ms with currentTime\n       onEnd={this.onEnd}           // Callback when playback finishes\n       onError={this.videoError}    // Callback when video cannot be loaded\n       style={styles.backgroundVideo} />\n\n// Later on in your styles..\nvar styles = StyleSheet.create({\n  backgroundVideo: {\n    position: 'absolute',\n    top: 0,\n    left: 0,\n    bottom: 0,\n    right: 0,\n  },\n});\n```\n\n## Static Methods\n\n`seek(seconds)`\n\nSeeks the video to the specified time (in seconds). Access using a ref to the component\n\n## Examples\n\n- See an [Example integration][1] in `react-native-login` *note that this example uses an older version of this library, before we used `export default` -- if you use `require` you will need to do `require('react-native-video').default` as per instructions above.\n- Try the included [VideoPlayer example][2] yourself:\n\n   ```sh\n   git clone git@github.com:brentvatne/react-native-video.git\n   cd react-native-video/Examples/VideoPlayer\n   npm install\n   open VideoPlayer.xcodeproj\n\n   ```\n\n   Then `Cmd+R` to start the React Packager, build and run the project in the simulator.\n\n## TODOS\n\n- [ ] Add support for captions\n- [ ] Add support for playing multiple videos in a sequence (will interfere with current `repeat` implementation)\n- [ ] Callback to get buffering progress for remote videos\n- [ ] Bring API closer to HTML5 `<Video>` [reference](http://www.w3schools.com/tags/ref_av_dom.asp)\n\n[1]: https://github.com/brentvatne/react-native-login/blob/56c47a5d1e23781e86e19b27e10427fd6391f666/App/Screens/UserInfoScreen.js#L32-L35\n[2]: https://github.com/brentvatne/react-native-video/tree/master/Examples/VideoPlayer\n\n---\n\n**MIT Licensed**\n",
+  "readmeFilename": "README.md",
   "scripts": {
     "test": "eslint *.js"
   },
